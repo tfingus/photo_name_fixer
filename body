@@ -1,0 +1,55 @@
+#!/bin/bash
+echo "####################################################"
+echo "################# PHOTO_NAME_FIXER #################"
+echo "####################################################"
+echo "\t Study project by tfingus"
+echo '\n' '\n' '\t' "Menu:"
+echo "1) Method1: using tool 'exiftool'"
+echo "2) Method2: using tool 'exif'"
+echo "3) Add execute to all users"
+echo "4) Add execute to all users (root)"
+read -p "Choice: " menu_choice
+	case $menu_choice in
+		1) 	#sprawdzenie czy narzedzie jest zainstalowane, instalacji jesli nie
+			if [ -x /usr/bin/exiftool ] ; then
+  				echo "Exiftool installed. Lets rename photos."
+			else
+				echo "Exiftool not installed. Installing before renaming."
+    				sudo apt update ; sudo apt install -y libimage-exiftool-perl
+			fi
+			for file in *
+			do
+				#deklaracja rozszerzen plikow branych pod uwage
+				if [ -f "$file" ] && [ ${file##*.} = "jpg" ] || [ ${file##*.} = "JPG" ] || [ ${file##*.} = "bmp" ] || [ ${file##*.} = "BMP" ] || [ ${file##*.} = "raw" ] || [ ${file##*.} = "RAW" ] ; then
+				echo -n $file '\t'
+				make_date=$(exiftool -DateTimeOriginal -d %Y%m%d_%H%M%S -s3 $file)
+				new_name="$make_date.${file##*.}" #; echo $new_name
+				mv -v $file $new_name
+				fi
+			done ;;
+		2) 	#sprawdzenie czy narzedzie jest zainstalowane, instalacji jesli nie
+			if [ -x /usr/bin/exif ] ; then
+  				echo "Exif installed. Lets rename photos."
+			else
+				echo "Exif not installed. Installing before renaming."
+				sudo apt update ; sudo apt install -y exif
+			fi
+
+			for file in *
+			do
+				#deklaracja rozszerzen plikow branych pod uwage
+				if [ -f "$file" ] && [ ${file##*.} = "jpg" ] || [ ${file##*.} = "JPG" ] || [ ${file##*.} = "bmp" ] || [ ${file##*.} = "BMP" ] || [ ${file##*.} = "raw" ] || [ ${file##*.} = "RAW" ] ; then
+				echo -n $file '\t'
+				make_date=$(exif -t 0x9003 -m "$file" | sed 's/://g' | tr " " "_")
+				new_name="$make_date.${file##*.}" #; echo $new_name
+				mv -v $file $new_name
+				fi
+			done ;;
+		3) 	chmod 555 $0 ;; # zabezpieczenie przed zamiana nazwy pliku
+		4) 	sudo chmod 555 $0 ;; # zabezpieczenie przed zamiana nazwy pliku 
+		*) 	echo -n "Not expected input. "
+			sleep 0,5
+			echo "Try running script again"
+			sleep 1
+			exit ;;
+	esac
