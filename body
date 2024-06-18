@@ -10,41 +10,71 @@ echo "3) Add execute to all users"
 echo "4) Add execute to all users (root)"
 read -p "Choice: " menu_choice
 	case $menu_choice in
-		1) 	#sprawdzenie czy narzedzie jest zainstalowane, instalacji jesli nie
+		1) 	#sprawdzenie czy narzedzie jest zainstalowane, instalacja jesli nie
 			if [ -x /usr/bin/exiftool ] ; then
   				echo "Exiftool installed. Lets rename photos."
 			else
 				echo "Exiftool not installed. Installing before renaming."
     				sudo apt update ; sudo apt install -y libimage-exiftool-perl
 			fi
+			
+			echo "Preview"
 			for file in *
 			do
 				#deklaracja rozszerzen plikow branych pod uwage
 				if [ -f "$file" ] && [ ${file##*.} = "jpg" ] || [ ${file##*.} = "JPG" ] || [ ${file##*.} = "bmp" ] || [ ${file##*.} = "BMP" ] || [ ${file##*.} = "raw" ] || [ ${file##*.} = "RAW" ] ; then
-				echo -n $file '\t'
 				make_date=$(exiftool -DateTimeOriginal -d %Y%m%d_%H%M%S -s3 $file)
-				new_name="$make_date.${file##*.}" #; echo $new_name
-				mv -v $file $new_name
+				new_name="$make_date.${file##*.}"
+				echo "Fixed name: " $new_name '\t' "Current: " $file 
 				fi
-			done ;;
-		2) 	#sprawdzenie czy narzedzie jest zainstalowane, instalacji jesli nie
+			done
+			read -p "Do you want to proceed? (Y/N): " confirm
+			case $confirm in
+				Y)	for file in *
+					do
+					if [ -f "$file" ] && [ ${file##*.} = "jpg" ] || [ ${file##*.} = "JPG" ] || [ ${file##*.} = "bmp" ] || [ ${file##*.} = "BMP" ] || [ ${file##*.} = "raw" ] || [ ${file##*.} = "RAW" ] ; then
+					make_date=$(exiftool -DateTimeOriginal -d %Y%m%d_%H%M%S -s3 $file)
+					new_name="$make_date.${file##*.}"
+					mv -v $file $new_name
+					fi
+					done ;;
+				N) 	exit ;;
+				*)	echo "Wrong choice" ; sleep 2 ; exit ;;
+			esac
+		;;
+		2) 	#sprawdzenie czy narzedzie jest zainstalowane, instalacja jesli nie
 			if [ -x /usr/bin/exif ] ; then
   				echo "Exif installed. Lets rename photos."
 			else
 				echo "Exif not installed. Installing before renaming."
 				sudo apt update ; sudo apt install -y exif
 			fi
-
+			
+			echo "Preview"
 			for file in *
 			do
 				#deklaracja rozszerzen plikow branych pod uwage
 				if [ -f "$file" ] && [ ${file##*.} = "jpg" ] || [ ${file##*.} = "JPG" ] || [ ${file##*.} = "bmp" ] || [ ${file##*.} = "BMP" ] || [ ${file##*.} = "raw" ] || [ ${file##*.} = "RAW" ] ; then
-				echo -n $file '\t'
 				make_date=$(exif -t 0x9003 -m "$file" | sed 's/://g' | tr " " "_")
-				new_name="$make_date.${file##*.}" #; echo $new_name
-				mv -v $file $new_name
+				new_name="$make_date.${file##*.}"
+				echo "Fixed name: " $new_name '\t' "Current: " $file 
 				fi
-			done ;;
+			done
+			read -p "Do you want to proceed? (Y/N): " confirm
+			case $confirm in
+				Y)	for file in *
+					do
+					if [ -f "$file" ] && [ ${file##*.} = "jpg" ] || [ ${file##*.} = "JPG" ] || [ ${file##*.} = "bmp" ] || [ ${file##*.} = "BMP" ] || [ ${file##*.} = "raw" ] || [ ${file##*.} = "RAW" ] ; then
+					make_date=$(exif -t 0x9003 -m "$file" | sed 's/://g' | tr " " "_")
+					new_name="$make_date.${file##*.}"
+					mv -v $file $new_name
+					fi
+					done ;;
+				N) 	exit ;;
+				*)	echo "Wrong choice" ; sleep 2 ; exit ;;
+			esac
+			 
+		;;
 		3) 	chmod 555 $0 ;; # zabezpieczenie przed zamiana nazwy pliku
 		4) 	sudo chmod 555 $0 ;; # zabezpieczenie przed zamiana nazwy pliku 
 		*) 	echo -n "Not expected input. "
@@ -52,4 +82,4 @@ read -p "Choice: " menu_choice
 			echo "Try running script again"
 			sleep 1
 			exit ;;
-	esac
+	esac 
