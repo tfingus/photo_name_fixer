@@ -28,9 +28,9 @@ read -p "Choice: " menu_choice
 				echo "Fixed name: " $new_name '\t' "Current: " $file 
 				fi
 			done
-			read -p "Do you want to proceed? (Y/N): " confirm
+			read -p "Do you want to proceed? (y/n): " confirm
 			case $confirm in
-				Y)	for file in *
+				y)	for file in *
 					do
 					if [ -f "$file" ] && [ ${file##*.} = "jpg" ] || [ ${file##*.} = "JPG" ] || [ ${file##*.} = "bmp" ] || [ ${file##*.} = "BMP" ] || [ ${file##*.} = "raw" ] || [ ${file##*.} = "RAW" ] ; then
 					make_date=$(exiftool -DateTimeOriginal -d %Y%m%d_%H%M%S -s3 $file)
@@ -38,7 +38,7 @@ read -p "Choice: " menu_choice
 					mv -v $file $new_name
 					fi
 					done ;;
-				N) 	exit ;;
+				n) 	exit ;;
 				*)	echo "Wrong choice" ; sleep 2 ; exit ;;
 			esac
 		;;
@@ -60,9 +60,9 @@ read -p "Choice: " menu_choice
 				echo "Fixed name: " $new_name '\t' "Current: " $file 
 				fi
 			done
-			read -p "Do you want to proceed? (Y/N): " confirm
+			read -p "Do you want to proceed? (y/n): " confirm
 			case $confirm in
-				Y)	for file in *
+				y)	for file in *
 					do
 					if [ -f "$file" ] && [ ${file##*.} = "jpg" ] || [ ${file##*.} = "JPG" ] || [ ${file##*.} = "bmp" ] || [ ${file##*.} = "BMP" ] || [ ${file##*.} = "raw" ] || [ ${file##*.} = "RAW" ] ; then
 					make_date=$(exif -t 0x9003 -m "$file" | sed 's/://g' | tr " " "_")
@@ -70,16 +70,14 @@ read -p "Choice: " menu_choice
 					mv -v $file $new_name
 					fi
 					done ;;
-				N) 	exit ;;
+				n) 	exit ;;
 				*)	echo "Wrong choice" ; sleep 2 ; exit ;;
 			esac
 			 
 		;;
 		3) 	chmod 555 $0 ;; # zabezpieczenie przed zamiana nazwy pliku
 		4) 	sudo chmod 555 $0 ;; # zabezpieczenie przed zamiana nazwy pliku 
-		*) 	echo -n "Not expected input. "
-			sleep 0,5
-			echo "Try running script again"
+		*) 	echo -n "Not expected input. " ; sleep 0,5 ; echo "Try running script again"
 			sleep 1
 			exit ;;
 	esac 
